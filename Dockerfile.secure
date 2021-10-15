@@ -1,0 +1,20 @@
+FROM golang AS build
+
+WORKDIR /app
+COPY go.mod ./
+COPY *.go ./
+
+# CGO has to be disabled for cross-container builds
+ENV CGO_ENABLED=0
+RUN go build -o main
+
+
+
+
+FROM scratch AS run
+
+COPY --from=build /app/main /
+
+EXPOSE 8080
+
+CMD ["/main"]
